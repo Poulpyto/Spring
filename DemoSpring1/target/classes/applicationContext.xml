@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+<!--  declaration des beans dev id precise qu'ils seront utilisés pour l'injection-->
+<bean id="dev1" class="com.huios.DemoSpring1.Developpeur">
+	<property name="nom" value="Toto Le Devkipu" />
+	<property name="anExp" value ="1" />
+</bean>
+<bean id="dev2" class="com.huios.DemoSpring1.Developpeur">
+	<property name="nom" value="Titi le Grand Chef delamorkitu" />
+	<property name="anExp" value ="1108" />
+</bean>
+<!-- declaration bean societe puis injection -->
+<bean name="societe" class="com.huios.DemoSpring1.SocieteDevLogiciel">
+	<property name="dev" ref ="dev1"/>
+	<property name="chef" ref ="dev2"/>
+
+</bean>
+</beans>
