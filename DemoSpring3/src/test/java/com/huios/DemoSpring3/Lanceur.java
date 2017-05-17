@@ -14,7 +14,7 @@ public class Lanceur {
 		//2.recuperation d'un bean
 		User user = (User) appContext.getBean("user");
 		Iservice service = (Iservice) appContext.getBean("serviceImpl");
-		user.setNom("toto");
+		user.setNom("tutu");
 		User user2 = (User) appContext.getBean("user");
 		user2.setNom("titi");
 		//System.out.println("bean user= "+ user.getNom());
@@ -22,9 +22,9 @@ public class Lanceur {
 		//3.traitement
 		service.ajouterUser(user);
 	
-	//	System.out.println(service.listerUsers());
+		System.out.println(service.listerUsers());
 		//System.out.println(service.listerParNom("toto"));
-	//	System.out.println(service.listerParMC("ti"));
+		System.out.println(service.listerParMC("flo"));
 		//service.ajouterUser(user);
 		//service.ajouterUser(user2);
 		//service.supprimerUser(1);

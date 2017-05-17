@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,34 +23,31 @@ public class DaoImplJPA implements IDao {
 		em.persist(u);
 	}
 
-	@Override
 	public List<User> listerUsers() {
-		// TODO Auto-generated method stub
-		return null;
+		Query req = em.createQuery("SELECT c FROM User c");
+		return req.getResultList();
 	}
 
-	@Override
 	public void supprimerUser(long id) {
-		// TODO Auto-generated method stub
+		em.remove(trouverUser(id));
 
 	}
 
-	@Override
 	public User trouverUser(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return em.find(User.class, id);
 	}
 
-	@Override
 	public List<User> listerParMC(String nom) {
-		// TODO Auto-generated method stub
-		return null;
+		Query req = em.createQuery("SELECT c FROM User c where c.nom like Upper(:nom)");
+		req.setParameter("nom", "%" + nom + "%");
+		return req.getResultList();
 	}
 
-	@Override
 	public List<User> listerParNom(String nom) {
-		// TODO Auto-generated method stub
-		return null;
+		Query req = em.createQuery("SELECT c FROM User c where c.nom = Upper(:nom)");
+		req.setParameter("nom", nom);
+		return req.getResultList();
 	}
+
 
 }
