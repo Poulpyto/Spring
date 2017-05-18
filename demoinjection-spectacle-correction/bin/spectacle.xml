@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+    <context:annotation-config/> 
+    <!-- <context:component-scan base-package='com.objis'/>  -->
+	<!-- xmlns:context="http://www.springframework.org/schema/context" default-autowire="byName"> à décommenter/remplacer pour la question N°13-->
+
+	<!-- Lien utile configuration conteneur Spring 4.0 : http://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/beans.html-->
+
+	<!--<context:annotation-config/> à décommenter pour question N°15-->
+	
+	<!--<context:component-scan base-package='com.objis'/> à décommenter pour questions N°16, 17 et 18-->
+
+	<!--1) Instrument : saxophone -->
+	<bean id="saxophone" class="com.objis.spring.demoinjection.Saxophone"
+		scope="prototype"></bean>
+
+	<!--2) Instrument : violon -->
+	<bean id="violon" class="com.objis.spring.demoinjection.Violon" primary="true"></bean>
+
+	<!--3) Instrument : guitare -->
+	<bean id="guitare" class="com.objis.spring.demoinjection.Guitare"></bean>
+
+	<!--4) Olivier est un saxophoniste . Il joue morceau 'Vive le vent...' -->
+	<bean id="olivier" class="com.objis.spring.demoinjection.Musicien">
+		<property name="morceau" value="Vive le vent" />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<!--5) Jean-Marc est un saxophoniste . Il utilise un saxophone différent 
+		de celui d'Olivier -->
+	<bean id="jean-marc" class="com.objis.spring.demoinjection.Musicien">
+		<property name="morceau" value="Vive le vent" />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<!--6) Caroline est violoniste -->
+	<bean id="caroline" class="com.objis.spring.demoinjection.Musicien">
+		<property name="morceau" value="Vive le vent" />
+		<property name="instrument" ref="violon" />
+	</bean>
+
+	<!--7) Franck est guitariste -->
+	<bean id="franck" class="com.objis.spring.demoinjection.Musicien">
+		<!--  <property name="morceau" value="Vive le vent" />
+		<property name="instrument" ref="guitare" /> -->
+		<constructor-arg value="Vive le vent"/> 
+		<constructor-arg ref="guitare"/>
+	</bean>
+
+	<!--8) Julien joue plusieurs instruments, dont 2 saxophones (demo <list>) -->
+	<bean name="julien" class="com.objis.spring.demoinjection.GroupeMusique">
+		<property name="instruments">
+			<list>
+				<ref bean="saxophone" />
+				<ref bean="saxophone" />
+				<ref bean="guitare" />
+				<ref bean="violon" />
+			</list>
+		</property>
+	</bean>
+
+	<!--9) Alain joue plusieurs instruments , dont 2 saxophones (demo <set>) -->
+	<bean name="alain" class="com.objis.spring.demoinjection.GroupeMusique">
+		<property name="instruments">
+			<set>
+				<ref bean="saxophone" />
+				<ref bean="saxophone" />
+				<ref bean="guitare" />
+				<ref bean="violon" />
+			</set>
+		</property>
+	</bean>
+
+	<!--10) Louis joue le même morceau qu'Olivier -->
+	<bean id="louis" class="com.objis.spring.demoinjection.Musicien">
+		<property name="morceau" value="#{ olivier.morceau }" />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<!--11) Réduction XML : démo classe abstraite parente -->
+
+	<bean name="parent" class="com.objis.spring.demoinjection.Musicien"
+		abstract="true">
+		<property name="morceau" value="Vive le vent..." />
+		<property name="instrument" ref="violon" />
+	</bean>
+
+	<!-- Déclaration du Musicien Saxophoniste martin -->
+	<bean name="martin" parent="parent">
+		<property name="instrument" ref="saxophone" />
+	</bean>
+
+	<!--12) Réduction XML : démo AutoWiring 'byName' -->
+	<bean id="instrument" class="com.objis.spring.demoinjection.Saxophone"></bean>
+	<bean name="michel" class="com.objis.spring.demoinjection.Musicien"
+		autowire="byName">
+		<property name="morceau" value="Petit papa Noel..." />		
+	</bean>
+
+	<!--13) Réduction XML : démo default-autowiring='byName' à ajouter dans la déclaration section namespace de ce fichier-->
+
+	<!--14) Réduction XML : démo AutoWiring 'byType' : En cas de plusieurs beans avec le même type, prioriser un bean avec attribut primary="true"-->
+	<bean name="maurice" class="com.objis.spring.demoinjection.Musicien"
+		autowire="byType">
+		<property name="morceau" value="Petit papa Noel..." />
+	</bean>
+
+	<!--15) Réduction XML : démo <context:annotation-config/> + @AutoWired pour propriété. les beans sont toujours déclarés dans le XML -->
+	<bean name="gilbert" class="com.objis.spring.demoinjection.Musicien">
+		 <property name="morceau" value="Petit papa Noel..." />
+		 <property name="instrument" ref="instrument" />
+	</bean>
+	<!-- 
+	 @Component = composant générique Spring qui sera auto détecté
+	 @Repository = spécialisation de l'annotation @Component.Ce stéréotype désigne une classe qui est un DAO.
+	 @Service = spécialisation de l'annotation @Component. Ce stéréotype désigne une classe qui est un service métier
+	 @Component = spécialisation de l'annotation @Component. Ce stéréotype désigne un contrôleur de Spring MVC 
+	 -->
+	<!--16) Réduction XML : démo <context:component-scan base-package='com.objis'/> (en remplacement de <context:annotation-config/>)
+		+ @Service juste au dessus de la classe . Les beans ne sont plus déclarés dans le XML-->
+
+	<!--17) Réduction XML via annotation et filtrage : démo <context:component-scan base-package='com.objis'/> 
+		+ <context:include-filter type='assignable'> + @Service juste au dessus de la classe -->
+
+	<!--18) Réduction XML : démo <context:component-scan base-package='com.objis'/> 
+		+ @Configuration + @Bean .  Ici , les beans sont déclarés via attribut @Bean dans une classe java annotée @Configuration
+		DOC : http://static.springsource.org/spring/docs/4.0.x/spring-framework-reference/html/beans.html#beans-java  
+		ATTENTION AJouter librairie CGLIB -->
+
+	<!--19) Cycle de vie : accorder un instrument lors de son initialisation 
+		(Ex : guitare) -->
+	<bean name="youssef"
+		class="com.objis.spring.demoinjection.Musicien" init-method="arranger">
+		<property name="morceau" value="Vive le vent..." />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+	
+	<!--20) Cycle de vie : nettoyer un instrument lors de sa destruction -->
+	<bean name="sami"
+		class="com.objis.spring.demoinjection.Musicien" destroy-method="nettoyer">
+		<property name="morceau" value="Vive le vent..." />
+		<property name="instrument" ref="saxophone" />
+	</bean>
+</beans>
